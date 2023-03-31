@@ -19,7 +19,7 @@ async function bstationUpdate(){
         let title = $(this).find("div.timeline-card__card > div[class='bstar-video-card bstar-video-card--column bstar-video-card--ogv'] > div.bstar-video-card__text-wrap > div[class='bstar-video-card__text bstar-video-card__text--column'] > p[class='bstar-video-card__title bstar-video-card__title--small bstar-video-card__title--bold'] > a.bstar-video-card__title-text").text()
         let baru = $(this).find("div.timeline-card__card > div[class='bstar-video-card bstar-video-card--column bstar-video-card--ogv'] > div.bstar-video-card__text-wrap > div[class='bstar-video-card__text bstar-video-card__text--column'] > p[class='bstar-video-card__desc bstar-video-card__desc--small bstar-video-card__desc--highlight']").text()
         let time = $(this).find("p.timeline-card__time").text()
-        let image = $(this).find("div.timeline-card__card > div[class='bstar-video-card bstar-video-card--column bstar-video-card--ogv'] > div.bstar-video-card__cover-wrap > div[class='bstar-video-card__cover bstar-video-card__cover--normal'] > a > picture[class='bstar-image bstar-video-card__cover-img'] > source").attr('srcset')
+        let image = $(this).find("div.timeline-card__card > div[class='bstar-video-card bstar-video-card--column bstar-video-card--ogv'] > div.bstar-video-card__cover-wrap > div[class='bstar-video-card__cover bstar-video-card__cover--normal'] > a > picture[class='bstar-image bstar-video-card__cover-img'] > img.bstar-image__img").attr('src')
 
         dataUpdate.push({
             title,
