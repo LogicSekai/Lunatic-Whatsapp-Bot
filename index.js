@@ -94,7 +94,8 @@ const connectToWhatsApp = async () => {
         // Medapatkan ID whatsapp
         console.log('ID Whatsapp = ' + msg.key.remoteJid)
 
-        if(msg.key.fromMe){
+        if(!msg.key.fromMe){
+            await conn.readMessages([msg.key])
             if (messageType === 'conversation'){
                 const mwaMsg = msg.message.conversation
                 if(mwaMsg.substr(0,1) === '.'){
