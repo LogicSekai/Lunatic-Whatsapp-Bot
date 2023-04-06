@@ -1,8 +1,8 @@
 const { Configuration, OpenAIApi } = require("openai")
 
-async function ai(conn, id, api, prompt){
+async function ai(conn, id, prompt, api){
     const openai = new OpenAIApi(new Configuration({
-        apiKey: process.env.API_KEY_GPT
+        apiKey: api
     }))
 
     openai.createChatCompletion({

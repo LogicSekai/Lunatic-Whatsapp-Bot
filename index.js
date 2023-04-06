@@ -18,6 +18,11 @@ const fs = require('fs')
 const { config } = require("dotenv")
 config()
 
+const express = require('express');
+const bodyParser = require('body-parser');
+const app = express();
+const port = 3000;
+
 const { type } = require("os");
 const { welcome } = require("./module/welcome")
 const { sendSticker } = require("./module/sticker")
@@ -45,39 +50,72 @@ const connectToWhatsApp = async () => {
         auth: state,
     });
 
-    cron.schedule('*/1 * * * *', async () => {
-        let timeNow = new Date()
-        // Jika hari belum berganti
-        if(timeNow.getHours() !== 00){
-            // Ambil data dari Bstation
-            let getDataUpdateBS = await bstationUpdate()
-            // Jika terdapat data terbaru kirim pesan wa dan perbarui liveBstation
-            if(getDataUpdateBS.length > liveBstation.length){
-                // mengambil data grub yang ingin menerima notif
-                
-                liveBstation = getDataUpdateBS
-                let rawData = fs.readFileSync('./group-bs.json')
-                let data = JSON.parse(rawData)
-                
-                for (let i = 0; i < data.length; i++) {
-                    const group = data[i];
-                    // console.log(`Group ID: ${group.groupId}, Notification: ${group.notification}`);
-                    
-                    // melakukan operasi lainnya pada data di dalam loop
-                    // Mengecek apakah alamat ini ingin menerima notif atau tidak
-                    if(group.notification === 'enable'){
-                        // Kirim pesan notifikasi ke semua whatsapp
-                        await conn.sendMessage(group.groupId, {
-                            image: {url: getDataUpdateBS[getDataUpdateBS.length - 1].image},
-                            caption: getDataUpdateBS[getDataUpdateBS.length - 1].time + ' - ' + getDataUpdateBS[getDataUpdateBS.length - 1].baru +'\n*' + getDataUpdateBS[getDataUpdateBS.length - 1].title + '*',
-                        })
-                    }
-                }
+    app.use(bodyParser.urlencoded({ extended: true }))
+    app.use(bodyParser.json())
+
+    app.post('/bstation', async (req, res) => {
+        const body = req.body
+        const BstationJS = req.body.message
+        console.log(body)
+        res.status(200).send('Webhook received successfully!')
+
+        let rawData = fs.readFileSync('./group-bs.json')
+        let data = JSON.parse(rawData)
+        
+        for (let i = 0; i < data.length; i++) {
+            const group = data[i];
+            // console.log(`Group ID: ${group.groupId}, Notification: ${group.notification}`);
+            
+            // melakukan operasi lainnya pada data di dalam loop
+            // Mengecek apakah alamat ini ingin menerima notif atau tidak
+            if(group.notification === 'enable'){
+                // Kirim pesan notifikasi ke semua whatsapp
+                console.log(data[i])
+                // await conn.sendMessage(group.groupId, {
+                //     image: {url: BstationJS[BstationJS.length - 1].image},
+                //     caption: BstationJS[BstationJS.length - 1].time + ' - ' + BstationJS[BstationJS.length - 1].baru +'\n*' + BstationJS[BstationJS.length - 1].title + '*',
+                // })
             }
-        } else { //Jika hari sudah berganti atur ulang data liveBstation
-            liveBstation = []
         }
-    });
+    })
+
+    app.listen(port, () => {
+        console.log(`Webhook server listening at http://localhost:${port}`)
+    })
+
+    // cron.schedule('*/1 * * * *', async () => {
+    //     let timeNow = new Date()
+    //     // Jika hari belum berganti
+    //     if(timeNow.getHours() !== 00){
+    //         // Ambil data dari Bstation
+    //         let getDataUpdateBS = await bstationUpdate()
+    //         // Jika terdapat data terbaru kirim pesan wa dan perbarui liveBstation
+    //         if(getDataUpdateBS.length > liveBstation.length){
+    //             // mengambil data grub yang ingin menerima notif
+                
+    //             liveBstation = getDataUpdateBS
+    //             let rawData = fs.readFileSync('./group-bs.json')
+    //             let data = JSON.parse(rawData)
+                
+    //             for (let i = 0; i < data.length; i++) {
+    //                 const group = data[i];
+    //                 // console.log(`Group ID: ${group.groupId}, Notification: ${group.notification}`);
+                    
+    //                 // melakukan operasi lainnya pada data di dalam loop
+    //                 // Mengecek apakah alamat ini ingin menerima notif atau tidak
+    //                 if(group.notification === 'enable'){
+    //                     // Kirim pesan notifikasi ke semua whatsapp
+    //                     await conn.sendMessage(group.groupId, {
+    //                         image: {url: getDataUpdateBS[getDataUpdateBS.length - 1].image},
+    //                         caption: getDataUpdateBS[getDataUpdateBS.length - 1].time + ' - ' + getDataUpdateBS[getDataUpdateBS.length - 1].baru +'\n*' + getDataUpdateBS[getDataUpdateBS.length - 1].title + '*',
+    //                     })
+    //                 }
+    //             }
+    //         }
+    //     } else { //Jika hari sudah berganti atur ulang data liveBstation
+    //         liveBstation = []
+    //     }
+    // });
 
     conn.ev.on('messages.upsert', async (m) => {
         const msg = m.messages[0]
@@ -133,7 +171,7 @@ const connectToWhatsApp = async () => {
                 } else if(waMsg.substr(0,7) === '.search' || waMsg.substr(0,8) === '.sticker'){
                     await noImage(conn, msg)
                 } else if(waMsg.substr(0, 2) === '.q'){
-                    await ai(conn, msg.key.remoteJid, waMsg.substr(2))
+                    await ai(conn, msg.key.remoteJid, waMsg.substr(2), process.env.API_KEY_GPT)
                 } else if(waMsg === '.add_bstation_notif'){
                     // Menambahkan group ke dalam json untuk notifikasi Bstation
                     // if(msg.key.remoteJid.includes('6285812442079')){
@@ -167,9 +205,9 @@ const connectToWhatsApp = async () => {
                 await sendSticker(conn, msg, pack)
             }
         } else if(messageTypes.includes('documentWithCaptionMessage')) {
-            if(msg.message.documentWithCaptionMessage.message.documentMessage.caption === '.sticker') {
+            if(msg.message.documentWithCaptionMessage.message.documentMessage.caption.substr(0,8) === '.sticker') {
                 // Buat dan kirim stiker
-                let pack = msg.message.imageMessage.caption.replace('.sticker ', '').replace('.sticker', '')
+                let pack = msg.message.documentWithCaptionMessage.message.documentMessage.caption.replace('.sticker ', '').replace('.sticker', '')
                 await sendSticker(conn, msg, pack)
             }
         }
@@ -184,14 +222,12 @@ const connectToWhatsApp = async () => {
         await conn.sendMessage(msg.key.remoteJid, reactionMessage)
     });
 
-    //jika close atau logout
+    // jika close atau logout
     conn.ev.on("connection.update", (update) => {
         const { connection, lastDisconnect } = update;
         if (connection === "close") {
             console.log("Server Ready ✓");
-            lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut
-                ? connectToWhatsApp()
-                : console.log("Wa web terlogout...");
+            lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut ? connectToWhatsApp() : console.log("Wa web terlogout...");
         }
     });
 
