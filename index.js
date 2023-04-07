@@ -136,7 +136,7 @@ const connectToWhatsApp = async () => {
                 } else if(mwaMsg.substr(0,7) === '.search' || mwaMsg.substr(0,8) === '.sticker'){
                     await noImage(conn, msg)
                 } else if(mwaMsg.substr(0, 2) === '.q'){
-                    await ai(conn, msg.key.remoteJid, mwaMsg.substr(2))
+                    await ai(conn, msg.key.remoteJid, mwaMsg.substr(2), process.env.API_KEY_GPT)
                 } else if(mwaMsg === '.add_bstation_notif'){
                     // Menambahkan group ke dalam json untuk notifikasi Bstation
                     // if(msg.key.remoteJid.includes('6285812442079')){
@@ -211,15 +211,17 @@ const connectToWhatsApp = async () => {
                 await sendSticker(conn, msg, pack)
             }
         }
-
-        // Beri reaksi!
-        const reactionMessage = {
-            react: {
-                text: "💖", // use an empty string to remove the reaction
-                key: msg.key
+        
+        if ((messageType === 'conversation' && msg.message.conversation.substr(0, 1) === '.') || (messageType === 'extendedTextMessage' && msg.message.extendedTextMessage.text.substr(0, 1) === '.') || (messageType === 'imageMessage' && msg.message.imageMessage.caption.substr(0, 1) === '.') || (messageTypes.includes('documentWithCaptionMessage') && msg.message.documentWithCaptionMessage.message.documentMessage.caption.substr(0,1) === '.')) {
+            // Beri reaksi!
+            const reactionMessage = {
+                react: {
+                    text: "💖", // use an empty string to remove the reaction
+                    key: msg.key
+                }
             }
+            await conn.sendMessage(msg.key.remoteJid, reactionMessage)
         }
-        await conn.sendMessage(msg.key.remoteJid, reactionMessage)
     });
 
     // jika close atau logout

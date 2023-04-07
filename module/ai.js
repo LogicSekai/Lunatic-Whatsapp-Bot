@@ -11,6 +11,8 @@ async function ai(conn, id, prompt, api){
     }).then(async response => {
         var ms = response.data.choices[0].message.content
         await conn.sendMessage(id, { text: ms.replace('\n\n', '') })
+    }).catch(err => {
+        console.log(err)
     })
 }
 

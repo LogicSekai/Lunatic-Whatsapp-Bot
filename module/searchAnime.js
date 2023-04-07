@@ -39,13 +39,13 @@ async function searchAnime(conn, msg){
                         // Mengirim respon pesan ke whatsapp
                         image: {url: result.data.data.images.jpg.image_url},
                         caption: '_Hasil pencarian ' + String(similarity).slice(0, 2) + '% mirip dengan_\n\n' + '*Title* : ' + result.data.data.title + '\n *Type* : ' + result.data.data.type + '\n *Episode*: _' + result.data.data.episodes + '_\n *Aired from* : ' + result.data.data.aired.from.substr(0, 10) + '\n *Status* : _'+ result.data.data.status + '_\n *Score* : ' + result.data.data.score + '\n\n lunatic.logicsekai.com',
-                        templateButtons: [{
-                            index: 1,
-                            urlButton: {
-                                displayText: 'More details!',
-                                url: process.env.LUNATIC_SERVER + 'track_resource/details/' + body.result[0].anilist.id + '/' + body.result[0].anilist.idMal + '?pin=' + response.data.url_img
-                            }
-                        }],
+                        // templateButtons: [{
+                        //     index: 1,
+                        //     urlButton: {
+                        //         displayText: 'More details!',
+                        //         url: process.env.LUNATIC_SERVER + 'track_resource/details/' + body.result[0].anilist.id + '/' + body.result[0].anilist.idMal + '?pin=' + response.data.url_img
+                        //     }
+                        // }],
                     })
                 }).catch(err => {
                     conn.sendMessage(msg.key.remoteJid, { text: 'Oopsie doopsies 1' })

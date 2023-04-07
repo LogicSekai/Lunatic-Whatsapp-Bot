@@ -25,8 +25,8 @@ cron.schedule('*/5 * * * * *', async () => {
         // mengambil data grub yang ingin menerima notif
         liveBstation = getDataUpdateBS
         await sendToWhatsappServerBot(getDataUpdateBS)
-        console.log(liveBstation + ' ' + no++ + ' ' + JSON.stringify(liveBstation[liveBstation.length - 1]))
     }
+    console.log(liveBstation + ' ' + no++ + ' ' + getDataUpdateBS)
 });
 
 async function sendToWhatsappServerBot(dataBS) {
