@@ -8,3 +8,5 @@ services:
     working_dir: /home/node
     volumes:
       - .:/home/node
+    ports:
+      - 3000:3000
