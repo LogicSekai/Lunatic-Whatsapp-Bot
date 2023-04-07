@@ -54,68 +54,25 @@ const connectToWhatsApp = async () => {
     app.use(bodyParser.json())
 
     app.post('/bstation', async (req, res) => {
-        const body = req.body
-        const BstationJS = req.body.message
+        let body = req.body
+        let BstationJS = req.body.message
         console.log(body)
         res.status(200).send('Webhook received successfully!')
 
         let rawData = fs.readFileSync('./group-bs.json')
-        let data = JSON.parse(rawData)
+        let dataGroup = JSON.parse(rawData)
+
+        let dataAnimeNotification = BstationJS[BstationJS.length - 1].dataAnime
         
-        for (let i = 0; i < data.length; i++) {
-            const group = data[i];
-            // console.log(`Group ID: ${group.groupId}, Notification: ${group.notification}`);
-            
-            // melakukan operasi lainnya pada data di dalam loop
-            // Mengecek apakah alamat ini ingin menerima notif atau tidak
-            // if(group.notification === 'enable'){
-                // Kirim pesan notifikasi ke semua whatsapp
-                console.log(data[i])
-                // await conn.sendMessage(group.groupId, {
-                //     image: {url: BstationJS[BstationJS.length - 1].image},
-                //     caption: BstationJS[BstationJS.length - 1].time + ' - ' + BstationJS[BstationJS.length - 1].baru +'\n*' + BstationJS[BstationJS.length - 1].title + '*',
-                // })
-            // }
+        for (let i = 0; i < Object.keys(dataGroup).length; i++) {
+            for (let o = 0; o < dataAnimeNotification.length; o++){
+                await conn.sendMessage(Object.keys(dataGroup)[i], {
+                    image: {url: dataAnimeNotification[dataAnimeNotification.length - 1].image},
+                    caption: '⌚' + dataAnimeNotification[dataAnimeNotification.length - 1].time + ' - ' + dataAnimeNotification[dataAnimeNotification.length - 1].baru + '\n*' + dataAnimeNotification[dataAnimeNotification.length - 1].title + '*',
+                })
+            }
         }
     })
-
-    app.listen(port, () => {
-        console.log(`Webhook server listening at http://localhost:${port}`)
-    })
-
-    // cron.schedule('*/1 * * * *', async () => {
-    //     let timeNow = new Date()
-    //     // Jika hari belum berganti
-    //     if(timeNow.getHours() !== 00){
-    //         // Ambil data dari Bstation
-    //         let getDataUpdateBS = await bstationUpdate()
-    //         // Jika terdapat data terbaru kirim pesan wa dan perbarui liveBstation
-    //         if(getDataUpdateBS.length > liveBstation.length){
-    //             // mengambil data grub yang ingin menerima notif
-                
-    //             liveBstation = getDataUpdateBS
-    //             let rawData = fs.readFileSync('./group-bs.json')
-    //             let data = JSON.parse(rawData)
-                
-    //             for (let i = 0; i < data.length; i++) {
-    //                 const group = data[i];
-    //                 // console.log(`Group ID: ${group.groupId}, Notification: ${group.notification}`);
-                    
-    //                 // melakukan operasi lainnya pada data di dalam loop
-    //                 // Mengecek apakah alamat ini ingin menerima notif atau tidak
-    //                 if(group.notification === 'enable'){
-    //                     // Kirim pesan notifikasi ke semua whatsapp
-    //                     await conn.sendMessage(group.groupId, {
-    //                         image: {url: getDataUpdateBS[getDataUpdateBS.length - 1].image},
-    //                         caption: getDataUpdateBS[getDataUpdateBS.length - 1].time + ' - ' + getDataUpdateBS[getDataUpdateBS.length - 1].baru +'\n*' + getDataUpdateBS[getDataUpdateBS.length - 1].title + '*',
-    //                     })
-    //                 }
-    //             }
-    //         }
-    //     } else { //Jika hari sudah berganti atur ulang data liveBstation
-    //         liveBstation = []
-    //     }
-    // });
 
     conn.ev.on('messages.upsert', async (m) => {
         const msg = m.messages[0]
@@ -149,17 +106,8 @@ const connectToWhatsApp = async () => {
                     // await setNotif(conn, msg.key.remoteJid, mwaMsg.replace('.set_bstation_notif ', '').replace('.set_bstation_notif', '').toLowerCase())
                 } else if(mwaMsg === '.getbs'){
                     await conn.sendMessage(msg.key.remoteJid, {text: JSON.stringify(liveBstation)})
-                } else if(mwaMsg === '.tes'){
-                    // send a list message!
-                    const reactionMessage = {
-                        react: {
-                            text: "💖", // use an empty string to remove the reaction
-                            key: msg.key
-                        }
-                    }
-                    
-                    await conn.sendMessage(msg.key.remoteJid, reactionMessage)
-
+                } else if (mwaMsg === '.tes') {
+                    console.log("first")
                 } else {
                     await unknownCommand(conn, msg)
                 }
@@ -184,8 +132,6 @@ const connectToWhatsApp = async () => {
                     await removeGroup(conn, msg.key.remoteJid)
                     // await setNotif(conn, msg.key.remoteJid, waMsg.replace('.set_bstation_notif ', '').replace('.set_bstation_notif', '').toLowerCase())
                 } else if(waMsg === '.update'){
-                    // const reaction = '😂';
-                    // conn.sendMessage(msg.key.remoteJid, reaction, null, {quotedMsg: true, sendEphemeral: true});
                     let lastUpdate = await bstationUpdate()
                     conn.sendMessage(msg.key.remoteJid, {text: 'Baru saja tanyang'})
                     await conn.sendMessage(msg.key.remoteJid, {
@@ -194,6 +140,12 @@ const connectToWhatsApp = async () => {
                     })
                 } else if(waMsg === '.getbs'){
                     await conn.sendMessage(msg.key.remoteJid, {text: JSON.stringify(liveBstation)})
+                } else if (waMsg === '.tes') {
+                    await conn.sendMessage(
+                        msg.key.remoteJid, 
+                        { location: { degreesLatitude: -7.504603, degreesLongitude: 112.549899 } }
+                    )
+
                 } else {
                     await unknownCommand(conn, msg)
                 }

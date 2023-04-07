@@ -27,12 +27,15 @@ async function bstationUpdate(){
             dataAnime.push({
                 title,
                 baru,
+                time,
                 image,
                 update: baru.includes('Diperbarui')
             })
         })
         
-        dataUpdate[time]=dataAnime
+        dataUpdate.push({
+            dataAnime
+        })
     })
 
     return dataUpdate
