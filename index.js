@@ -31,7 +31,7 @@ const { unknownCommand } = require("./module/unknownCommand")
 const { noImage } = require("./module/noImage")
 const { searchAnime } = require("./module/searchAnime")
 const { ai } = require("./module/ai")
-const { addGroup, setNotif, addDinied } = require("./module/group-bs")
+const { addGroup, setNotif, addDinied, removeGroup } = require("./module/group-bs")
 const { bstationUpdate } = require("./module/notificationBstation")
 
 const cron = require('node-cron')
@@ -68,14 +68,14 @@ const connectToWhatsApp = async () => {
             
             // melakukan operasi lainnya pada data di dalam loop
             // Mengecek apakah alamat ini ingin menerima notif atau tidak
-            if(group.notification === 'enable'){
+            // if(group.notification === 'enable'){
                 // Kirim pesan notifikasi ke semua whatsapp
                 console.log(data[i])
                 // await conn.sendMessage(group.groupId, {
                 //     image: {url: BstationJS[BstationJS.length - 1].image},
                 //     caption: BstationJS[BstationJS.length - 1].time + ' - ' + BstationJS[BstationJS.length - 1].baru +'\n*' + BstationJS[BstationJS.length - 1].title + '*',
                 // })
-            }
+            // }
         }
     })
 
@@ -137,15 +137,16 @@ const connectToWhatsApp = async () => {
                     await noImage(conn, msg)
                 } else if(mwaMsg.substr(0, 2) === '.q'){
                     await ai(conn, msg.key.remoteJid, mwaMsg.substr(2), process.env.API_KEY_GPT)
-                } else if(mwaMsg === '.add_bstation_notif'){
+                } else if(mwaMsg === '.enable_bstation_notif'){
                     // Menambahkan group ke dalam json untuk notifikasi Bstation
                     // if(msg.key.remoteJid.includes('6285812442079')){
                         await addGroup(conn, msg.key.remoteJid)
                     // } else {
                     //     await addDinied(conn, msg.key.remoteJid)
                     // }
-                } else if(mwaMsg.substr(0,19) === '.set_bstation_notif'){
-                    await setNotif(conn, msg.key.remoteJid, mwaMsg.replace('.set_bstation_notif ', '').replace('.set_bstation_notif', '').toLowerCase())
+                } else if(mwaMsg === '.disable_bstation_notif'){
+                    await removeGroup(conn, msg.key.remoteJid)
+                    // await setNotif(conn, msg.key.remoteJid, mwaMsg.replace('.set_bstation_notif ', '').replace('.set_bstation_notif', '').toLowerCase())
                 } else if(mwaMsg === '.getbs'){
                     await conn.sendMessage(msg.key.remoteJid, {text: JSON.stringify(liveBstation)})
                 } else if(mwaMsg === '.tes'){
@@ -172,15 +173,16 @@ const connectToWhatsApp = async () => {
                     await noImage(conn, msg)
                 } else if(waMsg.substr(0, 2) === '.q'){
                     await ai(conn, msg.key.remoteJid, waMsg.substr(2), process.env.API_KEY_GPT)
-                } else if(waMsg === '.add_bstation_notif'){
+                } else if(waMsg === '.enable_bstation_notif'){
                     // Menambahkan group ke dalam json untuk notifikasi Bstation
                     // if(msg.key.remoteJid.includes('6285812442079')){
                         await addGroup(conn, msg.key.remoteJid)
                     // } else {
                     //     await addDinied(conn, msg.key.remoteJid)
                     // }
-                } else if(waMsg.substr(0,19) === '.set_bstation_notif'){
-                    await setNotif(conn, msg.key.remoteJid, waMsg.replace('.set_bstation_notif ', '').replace('.set_bstation_notif', '').toLowerCase())
+                } else if(waMsg === '.disable_bstation_notif'){
+                    await removeGroup(conn, msg.key.remoteJid)
+                    // await setNotif(conn, msg.key.remoteJid, waMsg.replace('.set_bstation_notif ', '').replace('.set_bstation_notif', '').toLowerCase())
                 } else if(waMsg === '.update'){
                     // const reaction = '😂';
                     // conn.sendMessage(msg.key.remoteJid, reaction, null, {quotedMsg: true, sendEphemeral: true});

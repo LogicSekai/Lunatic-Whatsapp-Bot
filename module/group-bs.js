@@ -6,14 +6,23 @@ async function addGroup(conn, jid){
     let data = JSON.parse(rawData)
     
     // Mengecek apakah data sudah ada
-    const index = data.findIndex(item => item.groupId === jid);
-
-    if (index === -1) {
+    if (!data[jid]) {
         // jika data belum ada tambahkan data ke dalam file
-        data.push({
-            groupId: jid,
-            notification: 'disable'
-        })
+        data[jid] = [{
+            groupId: jid
+        }]
+        // menulis kembali file JSON
+        let newData = JSON.stringify(data);
+        fs.writeFileSync('./group-bs.json', newData)
+
+        // Mengirim pesan ke whatsapp 
+        await conn.sendMessage(
+            jid,
+            {
+                sticker: fs.readFileSync('./pict/hutao.webp'),
+            },
+        )
+        await conn.sendMessage(jid, { text: 'Notifikasi Bstation berhasil diaktifkan untuk Room ini!' })
     } else {
         // Jika sudah ada kirim pesan whatsaap group sudah ditambahkan
         await conn.sendMessage(
@@ -22,22 +31,38 @@ async function addGroup(conn, jid){
                 sticker: fs.readFileSync('./pict/nilou.webp'),
             },
         )
-        await conn.sendMessage(jid, { text: 'Group sudah ada di dalam server, Anda tidak perlu lagi menambahkannya lagi!' })
-        return
+        await conn.sendMessage(jid, { text: 'Notifikasi Bstation sudah diaktifkan untuk Room ini!' })
     }
-    
-    // menulis kembali file JSON
-    let newData = JSON.stringify(data);
-    fs.writeFileSync('./group-bs.json', newData)
+}
 
-    // Mengirim pesan ke whatsapp 
-    await conn.sendMessage(
-        jid,
-        {
-            sticker: fs.readFileSync('./pict/hutao.webp'),
-        },
-    )
-    await conn.sendMessage(jid, { text: 'Group berhasil di tambahkan ke Server, anda harus mengaktifkannya terlebih dahulu agar dapat menerima notifikasi seputar Anime yang tayang di Bstation!' })
+async function removeGroup(conn, jid) {
+    let rawData = fs.readFileSync('./group-bs.json')
+    let data = JSON.parse(rawData)
+    
+    if (data[jid]) {
+        delete data[jid]
+        
+        // menulis kembali file JSON
+        let newData = JSON.stringify(data);
+        fs.writeFileSync('./group-bs.json', newData)
+
+        // Mengirim pesan respon ke wa
+        await conn.sendMessage(
+            jid,
+            {
+                sticker: fs.readFileSync('./pict/nahida.webp'),
+            },
+        )
+        await conn.sendMessage(jid, { text: 'Notifikasi Bstation Room ini berhasil dimatikan!' })
+    } else {
+        await conn.sendMessage(
+            jid,
+            {
+                sticker: fs.readFileSync('./pict/qiqi2.webp'),
+            },
+        )
+        await conn.sendMessage(jid, { text: 'Notifikasi Bstation Room ini sudah dimatikan!' })
+    }
 }
 
 async function setNotif(conn, jid, value){
@@ -115,8 +140,9 @@ async function addDinied(conn, jid){
     await conn.sendMessage(jid, { text: 'Group gagal ditambahkan ke server, silahkan hubungi wa.me/6285812442079 untuk meminta menambahkan group ke server!' })
 }
 
-module.exports={
+module.exports = {
     addGroup,
+    removeGroup,
     setNotif,
-    addDinied
+    addDinied,
 }
