@@ -18,9 +18,10 @@ const fs = require('fs')
 const { config } = require("dotenv")
 config()
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const app = express();
+const express = require('express')
+const bodyParser = require('body-parser')
+const app = express()
+const path = require('path')
 const port = 3000;
 
 const { type } = require("os");
@@ -53,6 +54,10 @@ const connectToWhatsApp = async () => {
     app.use(bodyParser.urlencoded({ extended: true }))
     app.use(bodyParser.json())
 
+    app.get('/', (req, res) => {
+        res.sendFile(path.join(__dirname, 'htaccess/index.html'));
+    });
+
     app.post('/bstation', async (req, res) => {
         let body = req.body
         let BstationJS = req.body.message
@@ -74,6 +79,10 @@ const connectToWhatsApp = async () => {
         }
     })
 
+    app.listen(port, () => {
+        console.log(`Webhook server listening at http://localhost:${port}`)
+    })
+    
     conn.ev.on('messages.upsert', async (m) => {
         const msg = m.messages[0]
 
