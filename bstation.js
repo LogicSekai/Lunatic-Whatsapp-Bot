@@ -1,12 +1,14 @@
 const cron = require('node-cron')
 const axios = require('axios')
+const { config } = require("dotenv")
+config()
 const { bstationUpdate } = require("./module/notificationBstation")
 
 
 let liveBstation = []
 let no = 0
 
-cron.schedule('*/1 * * * *', async () => {
+cron.schedule('*/30 * * * * *', async () => {
     let timeNow = new Date()
 
     // Jika hari berganti setel ulang liveBstation
@@ -30,7 +32,7 @@ cron.schedule('*/1 * * * *', async () => {
 });
 
 async function sendToWhatsappServerBot(dataBS) {
-    const url = 'http://localhost:3000/bstation';
+    const url = process.env.LUNATIC_WEBHOOK + '/bstation';
     const data = {
         event: 'Push data BStation Notif',
         message: dataBS
