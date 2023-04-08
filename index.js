@@ -147,8 +147,6 @@ const connectToWhatsApp = async () => {
                         image: {url: lastUpdate[lastUpdate.length - 1].image},
                         caption: lastUpdate[lastUpdate.length - 1].time + ' - ' + lastUpdate[lastUpdate.length - 1].baru + '\n' + '*' + lastUpdate[lastUpdate.length - 1].title + '*',
                     })
-                } else if(waMsg === '.getbs'){
-                    await conn.sendMessage(msg.key.remoteJid, {text: JSON.stringify(liveBstation)})
                 } else if (waMsg === '.tes') {
                     await conn.sendMessage(
                         msg.key.remoteJid, 
