@@ -34,7 +34,7 @@ async function ai(conn, id, prompt, api){
         stop: [" Q:", " A:"],
     }).then(async response => {
         var ms = response.data.choices[0].text
-        await conn.sendMessage(id, { text: ms.replace('?\n', '').replace('A: ', '').trim() })
+        await conn.sendMessage(id, { text: ms.replace('?\n', '').replace('A: ', '') })
     }).catch(async err => {
         await conn.sendMessage(id, { text: 'Maaf saat ini saya sedang melakukan pemeriksaan rutin' })
     })

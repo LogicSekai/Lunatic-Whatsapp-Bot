@@ -8,7 +8,7 @@ const { bstationUpdate } = require("./module/notificationBstation")
 let liveBstation = []
 let no = 0
 
-cron.schedule('*/5 * * * * *', async () => {
+cron.schedule('*/10 * * * * *', async () => {
     let timeNow = new Date()
 
     // Jika hari berganti setel ulang liveBstation
@@ -23,9 +23,7 @@ cron.schedule('*/5 * * * * *', async () => {
 
     // Jika terdapat data terbaru kirim data ke server wa bot dan perbarui liveBstation
     if (getDataUpdateBS.length > liveBstation.length) {
-        
-        // mengambil data grub yang ingin menerima notif
-        liveBstation = getDataUpdateBS
+        // Mengirim data ke Index bot melalui webhook
         await sendToWhatsappServerBot(getDataUpdateBS)
         console.log(no++ + ' ' + getDataUpdateBS.length)
     }
@@ -39,6 +37,8 @@ async function sendToWhatsappServerBot(dataBS) {
     };
     
     axios.post(url, data).then(response => {
+        // Jika data berhasil dikirim perbarui data agar ketika gagal dikirim akan di kerim ulang
+        liveBstation = dataBS
         console.log(response.data);
     }).catch(error => {
         console.error(error);
