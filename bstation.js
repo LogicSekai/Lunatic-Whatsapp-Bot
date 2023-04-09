@@ -8,7 +8,7 @@ const { bstationUpdate } = require("./module/notificationBstation")
 let liveBstation = []
 let no = 0
 
-cron.schedule('*/30 * * * * *', async () => {
+cron.schedule('*/10 * * * * *', async () => {
     let timeNow = new Date()
 
     // Jika hari berganti setel ulang liveBstation

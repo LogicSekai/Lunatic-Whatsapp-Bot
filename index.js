@@ -68,12 +68,13 @@ const connectToWhatsApp = async () => {
         let dataGroup = JSON.parse(rawData)
 
         let dataAnimeNotification = BstationJS[BstationJS.length - 1].dataAnime
+        console.log(dataAnimeNotification)
         
         for (let i = 0; i < Object.keys(dataGroup).length; i++) {
             for (let o = 0; o < dataAnimeNotification.length; o++){
                 await conn.sendMessage(Object.keys(dataGroup)[i], {
-                    image: {url: dataAnimeNotification[dataAnimeNotification.length - 1].image},
-                    caption: '⌚' + dataAnimeNotification[dataAnimeNotification.length - 1].time + ' - ' + dataAnimeNotification[dataAnimeNotification.length - 1].baru + '\n*' + dataAnimeNotification[dataAnimeNotification.length - 1].title + '*',
+                    image: {url: dataAnimeNotification[o].image},
+                    caption: '⌚' + dataAnimeNotification[o].time + ' - ' + dataAnimeNotification[o].baru + '\n*' + dataAnimeNotification[o].title + '*',
                 })
             }
         }
@@ -147,14 +148,7 @@ const connectToWhatsApp = async () => {
         }
         
         if ((messageType === 'conversation' && msg.message.conversation.substr(0, 1) === '.') || (messageType === 'extendedTextMessage' && msg.message.extendedTextMessage.text.substr(0, 1) === '.') || (messageType === 'imageMessage' && msg.message.imageMessage.caption.substr(0, 1) === '.') || (messageTypes.includes('documentWithCaptionMessage') && msg.message.documentWithCaptionMessage.message.documentMessage.caption.substr(0,1) === '.')) {
-            // Beri reaksi!
-            const reactionMessage = {
-                react: {
-                    text: "💖", // use an empty string to remove the reaction
-                    key: msg.key
-                }
-            }
-            await conn.sendMessage(msg.key.remoteJid, reactionMessage)
+            await reactToMessage(conn, msg.key, msg.key.remoteJid)
         }
     });
 
