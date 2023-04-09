@@ -104,19 +104,11 @@ const connectToWhatsApp = async () => {
                 } else if(mwaMsg.substr(0, 2) === '.q'){
                     await ai(conn, msg.key.remoteJid, mwaMsg.substr(2), process.env.API_KEY_GPT)
                 } else if(mwaMsg === '.enable_bstation_notif'){
-                    // Menambahkan group ke dalam json untuk notifikasi Bstation
-                    // if(msg.key.remoteJid.includes('6285812442079')){
                         await addGroup(conn, msg.key.remoteJid)
-                    // } else {
-                    //     await addDinied(conn, msg.key.remoteJid)
-                    // }
                 } else if(mwaMsg === '.disable_bstation_notif'){
                     await removeGroup(conn, msg.key.remoteJid)
-                    // await setNotif(conn, msg.key.remoteJid, mwaMsg.replace('.set_bstation_notif ', '').replace('.set_bstation_notif', '').toLowerCase())
                 } else if(mwaMsg === '.getbs'){
                     await conn.sendMessage(msg.key.remoteJid, {text: JSON.stringify(liveBstation)})
-                } else if (mwaMsg === '.tes') {
-                    console.log("first")
                 } else {
                     await unknownCommand(conn, msg)
                 }
@@ -131,28 +123,9 @@ const connectToWhatsApp = async () => {
                 } else if(waMsg.substr(0, 2) === '.q'){
                     await ai(conn, msg.key.remoteJid, waMsg.substr(2), process.env.API_KEY_GPT)
                 } else if(waMsg === '.enable_bstation_notif'){
-                    // Menambahkan group ke dalam json untuk notifikasi Bstation
-                    // if(msg.key.remoteJid.includes('6285812442079')){
                         await addGroup(conn, msg.key.remoteJid)
-                    // } else {
-                    //     await addDinied(conn, msg.key.remoteJid)
-                    // }
                 } else if(waMsg === '.disable_bstation_notif'){
                     await removeGroup(conn, msg.key.remoteJid)
-                    // await setNotif(conn, msg.key.remoteJid, waMsg.replace('.set_bstation_notif ', '').replace('.set_bstation_notif', '').toLowerCase())
-                } else if(waMsg === '.update'){
-                    let lastUpdate = await bstationUpdate()
-                    conn.sendMessage(msg.key.remoteJid, {text: 'Baru saja tanyang'})
-                    await conn.sendMessage(msg.key.remoteJid, {
-                        image: {url: lastUpdate[lastUpdate.length - 1].image},
-                        caption: lastUpdate[lastUpdate.length - 1].time + ' - ' + lastUpdate[lastUpdate.length - 1].baru + '\n' + '*' + lastUpdate[lastUpdate.length - 1].title + '*',
-                    })
-                } else if (waMsg === '.tes') {
-                    await conn.sendMessage(
-                        msg.key.remoteJid, 
-                        { location: { degreesLatitude: -7.504603, degreesLongitude: 112.549899 } }
-                    )
-
                 } else {
                     await unknownCommand(conn, msg)
                 }
