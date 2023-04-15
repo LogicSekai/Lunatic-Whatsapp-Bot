@@ -31,7 +31,8 @@ const { unknownCommand } = require("./module/unknownCommand")
 const { noImage } = require("./module/noImage")
 const { searchAnime } = require("./module/searchAnime")
 const { ai } = require("./module/ai")
-const { addGroup, setNotif, addDinied, removeGroup } = require("./module/group-bs")
+const { addGroup, removeGroup } = require("./module/group-bs")
+const { addGroupKC, removeGroupKC } = require("./module/group-kc")
 
 let liveBstation = []
 
@@ -71,6 +72,30 @@ const connectToWhatsApp = async () => {
                         caption: '⌚' + dataAnimeNotification[o].time + ' - ' + dataAnimeNotification[o].baru + '\n*' + dataAnimeNotification[o].title + '*',
                     })
                 }
+            }
+        }
+    })
+
+    app.post('/komikcast', async (req, res) => {
+        let KomikcastJS = req.body.message
+        res.status(200).send('Webhook received successfully!')
+
+        let rawData = fs.readFileSync('./group-kc.json')
+        let dataGroup = JSON.parse(rawData)
+
+        // let flag
+
+        // switch (KomikcastJS.type) {
+        //     case 'Manga': flag = '🇯🇵'
+        // }
+        console.log(KomikcastJS)
+        
+        if (KomikcastJS.length !== 0) {
+            for (let i = 0; i < Object.keys(dataGroup).length; i++) {
+                await conn.sendMessage(Object.keys(dataGroup)[i], {
+                    image: {url: KomikcastJS.img},
+                    caption: KomikcastJS.type + ' - ' + KomikcastJS.chapter + '\n*' + KomikcastJS.title + '*',
+                })
             }
         }
     })
@@ -120,6 +145,10 @@ const connectToWhatsApp = async () => {
                         await addGroup(conn, msg.key.remoteJid)
                 } else if(waMsg === '.disable_bstation_notif'){
                     await removeGroup(conn, msg.key.remoteJid)
+                } else if(waMsg === '.enable_komikcast_notif'){
+                        await addGroupKC(conn, msg.key.remoteJid)
+                } else if(waMsg === '.disable_komikcast_notif'){
+                    await removeGroupKC(conn, msg.key.remoteJid)
                 } else {
                     await unknownCommand(conn, msg)
                 }
