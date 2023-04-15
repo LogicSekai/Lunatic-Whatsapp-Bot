@@ -22,7 +22,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 const path = require('path')
-const port = 3000;
+const port = 3001;
 
 const { type } = require("os");
 const { welcome } = require("./module/welcome")

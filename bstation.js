@@ -25,7 +25,7 @@ cron.schedule('*/10 * * * * *', async () => {
     if (getDataUpdateBS.length > liveBstation.length) {
         // Mengirim data ke Index bot melalui webhook
         await sendToWhatsappServerBot(getDataUpdateBS)
-        console.log(no++ + ' ' + getDataUpdateBS.length)
+        console.log(no++ + ' ' + getDataUpdateBS)
     }
 });
 
