@@ -6,27 +6,31 @@ const { bstationUpdate } = require("./module/notificationBstation")
 
 
 let liveBstation = []
+let today
 let no = 0
 
 cron.schedule('*/10 * * * * *', async () => {
     let timeNow = new Date()
+    console.log(timeNow.getDate)
 
     // Jika hari berganti setel ulang liveBstation
-    if (timeNow.getHours() === 00 && timeNow.getMinutes === 00) {
+    if (today !== timeNow.getDay()) {
+        today = timeNow.getDay()
         liveBstation = []
         await sendToWhatsappServerBot([])
-        return
+    } else {
+        // Ambil data dari Bstation
+        let getDataUpdateBS = await bstationUpdate()
+
+        // Jika terdapat data terbaru kirim data ke server wa bot dan perbarui liveBstation
+        if (getDataUpdateBS.length > liveBstation.length) {
+            // Mengirim data ke Index bot melalui webhook
+            await sendToWhatsappServerBot(getDataUpdateBS)
+            console.log(no++ + ' ' + getDataUpdateBS)
+        }
     }
 
-    // Ambil data dari Bstation
-    let getDataUpdateBS = await bstationUpdate()
-
-    // Jika terdapat data terbaru kirim data ke server wa bot dan perbarui liveBstation
-    if (getDataUpdateBS.length > liveBstation.length) {
-        // Mengirim data ke Index bot melalui webhook
-        await sendToWhatsappServerBot(getDataUpdateBS)
-        console.log(no++ + ' ' + getDataUpdateBS)
-    }
+    console.log(liveBstation + ' - ' + today + ' - ' + liveBstation.length)
 });
 
 async function sendToWhatsappServerBot(dataBS) {

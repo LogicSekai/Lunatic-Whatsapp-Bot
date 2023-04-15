@@ -24,7 +24,6 @@ const app = express()
 const path = require('path')
 const port = 3001;
 
-const { type } = require("os");
 const { welcome } = require("./module/welcome")
 const { sendSticker } = require("./module/sticker")
 const { reactToMessage } = require("./module/reaction")
@@ -33,9 +32,6 @@ const { noImage } = require("./module/noImage")
 const { searchAnime } = require("./module/searchAnime")
 const { ai } = require("./module/ai")
 const { addGroup, setNotif, addDinied, removeGroup } = require("./module/group-bs")
-const { bstationUpdate } = require("./module/notificationBstation")
-
-const cron = require('node-cron')
 
 let liveBstation = []
 
@@ -59,23 +55,22 @@ const connectToWhatsApp = async () => {
     });
 
     app.post('/bstation', async (req, res) => {
-        let body = req.body
         let BstationJS = req.body.message
-        console.log(body)
         res.status(200).send('Webhook received successfully!')
 
         let rawData = fs.readFileSync('./group-bs.json')
         let dataGroup = JSON.parse(rawData)
 
-        let dataAnimeNotification = BstationJS[BstationJS.length - 1].dataAnime
-        console.log(dataAnimeNotification)
-        
-        for (let i = 0; i < Object.keys(dataGroup).length; i++) {
-            for (let o = 0; o < dataAnimeNotification.length; o++){
-                await conn.sendMessage(Object.keys(dataGroup)[i], {
-                    image: {url: dataAnimeNotification[o].image},
-                    caption: '⌚' + dataAnimeNotification[o].time + ' - ' + dataAnimeNotification[o].baru + '\n*' + dataAnimeNotification[o].title + '*',
-                })
+        if (BstationJS.length) {
+            let dataAnimeNotification = BstationJS[BstationJS.length - 1].dataAnime
+            
+            for (let i = 0; i < Object.keys(dataGroup).length; i++) {
+                for (let o = 0; o < dataAnimeNotification.length; o++){
+                    await conn.sendMessage(Object.keys(dataGroup)[i], {
+                        image: {url: dataAnimeNotification[o].image},
+                        caption: '⌚' + dataAnimeNotification[o].time + ' - ' + dataAnimeNotification[o].baru + '\n*' + dataAnimeNotification[o].title + '*',
+                    })
+                }
             }
         }
     })
@@ -87,8 +82,6 @@ const connectToWhatsApp = async () => {
     conn.ev.on('messages.upsert', async (m) => {
         const msg = m.messages[0]
 
-        console.log(msg)
-    
         if (!msg.message) return // Jika tidak ada pesan teks atau media
         const messageTypes = Object.keys (msg.message)// dapatkan jenis pesannya -- teks, gambar, video
         const messageType = messageTypes[0]
