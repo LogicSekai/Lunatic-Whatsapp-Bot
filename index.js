@@ -153,12 +153,16 @@ const connectToWhatsApp = async () => {
                 // Buat dan kirim stiker
                 let pack = msg.message.imageMessage.caption.replace('.sticker ', '').replace('.sticker', '')
                 await sendSticker(conn, msg, pack)
+            } else {
+                await unknownCommand(conn, msg)
             }
         } else if(messageTypes.includes('documentWithCaptionMessage')) {
             if(msg.message.documentWithCaptionMessage.message.documentMessage.caption.substr(0,8) === '.sticker') {
                 // Buat dan kirim stiker
                 let pack = msg.message.documentWithCaptionMessage.message.documentMessage.caption.replace('.sticker ', '').replace('.sticker', '')
                 await sendSticker(conn, msg, pack)
+            } else {
+                await unknownCommand(conn, msg)
             }
         }
         
