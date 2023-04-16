@@ -28,7 +28,6 @@ async function sendToWhatsappServerBot(dataKC) {
     axios.post(url, data).then(response => {
         // Jika data berhasil dikirim perbarui data agar ketika gagal dikirim akan di kerim ulang
         komikcastNow = dataKC.title
-        console.log(response.data);
     }).catch(error => {
         console.error(error);
     });

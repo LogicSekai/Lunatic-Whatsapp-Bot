@@ -73,9 +73,6 @@ async function setNotif(conn, jid, value){
     // Mencari index apakah data ada atau tidak
     const index = data.findIndex(item => item.groupId === jid);
 
-    console.log(index)
-    console.log(value)
-
     if(value === 'enable' || value === 'disable'){
         // Jika data ada maka ubah data lama ke baru
         if (index !== -1) {

@@ -34,8 +34,6 @@ const { ai } = require("./module/ai")
 const { addGroup, removeGroup } = require("./module/group-bs")
 const { addGroupKC, removeGroupKC } = require("./module/group-kc")
 
-let liveBstation = []
-
 async function getSticker(filePath){
     const stickerfile= await fs.promises.readFile(filePath)
     return stickerfile.toString('base64')
@@ -82,13 +80,6 @@ const connectToWhatsApp = async () => {
 
         let rawData = fs.readFileSync('./group-kc.json')
         let dataGroup = JSON.parse(rawData)
-
-        // let flag
-
-        // switch (KomikcastJS.type) {
-        //     case 'Manga': flag = '🇯🇵'
-        // }
-        console.log(KomikcastJS)
         
         if (KomikcastJS.length !== 0) {
             for (let i = 0; i < Object.keys(dataGroup).length; i++) {
@@ -126,8 +117,10 @@ const connectToWhatsApp = async () => {
                         await addGroup(conn, msg.key.remoteJid)
                 } else if(mwaMsg === '.disable_bstation_notif'){
                     await removeGroup(conn, msg.key.remoteJid)
-                } else if(mwaMsg === '.getbs'){
-                    await conn.sendMessage(msg.key.remoteJid, {text: JSON.stringify(liveBstation)})
+                } else if(mwaMsg === '.enable_komikcast_notif'){
+                        await addGroupKC(conn, msg.key.remoteJid)
+                } else if(mwaMsg === '.disable_komikcast_notif'){
+                    await removeGroupKC(conn, msg.key.remoteJid)
                 } else {
                     await unknownCommand(conn, msg)
                 }
