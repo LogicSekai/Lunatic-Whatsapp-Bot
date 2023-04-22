@@ -30,8 +30,7 @@ async function ai(conn, id, prompt, api, org){
             await conn.sendMessage(id, { text: ms.text.substr(cut + 3) })
 
             promptNeuro = promptNeuro + "Q:" + prompt + ms
-            console.log(promptNeuro)
-            // console.log(response.data)
+            fs.writeFileSync('./teks.txt', promptNeuro)
         }).catch(async err => {
             await conn.sendMessage(id, { text: 'Maaf saat ini saya sedang melakukan pemeriksaan rutin' })
         })
