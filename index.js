@@ -34,11 +34,6 @@ const { ai } = require("./module/ai")
 const { addGroup, removeGroup } = require("./module/group-bs")
 const { addGroupKC, removeGroupKC } = require("./module/group-kc")
 
-async function getSticker(filePath){
-    const stickerfile= await fs.promises.readFile(filePath)
-    return stickerfile.toString('base64')
-}
-
 const connectToWhatsApp = async () => {
     const { state, saveCreds } = await useMultiFileAuthState('baileys_auth_info')
     const conn = makeWASocket({
