@@ -107,7 +107,7 @@ const connectToWhatsApp = async () => {
                 } else if(mwaMsg.substr(0,7) === '.search' || mwaMsg.substr(0,8) === '.sticker'){
                     await noImage(conn, msg)
                 } else if(mwaMsg.substr(0, 2) === '.q'){
-                    await ai(conn, msg.key.remoteJid, mwaMsg.substr(2), process.env.API_KEY_GPT)
+                    await ai(conn, msg.key.remoteJid, mwaMsg.substr(2), process.env.API_KEY_GPT, process.env.ORG_KEY_GPT)
                 } else if(mwaMsg === '.enable_bstation_notif'){
                         await addGroup(conn, msg.key.remoteJid)
                 } else if(mwaMsg === '.disable_bstation_notif'){
@@ -128,7 +128,7 @@ const connectToWhatsApp = async () => {
                 } else if(waMsg.substr(0,7) === '.search' || waMsg.substr(0,8) === '.sticker'){
                     await noImage(conn, msg)
                 } else if(waMsg.substr(0, 2) === '.q'){
-                    await ai(conn, msg.key.remoteJid, waMsg.substr(2), process.env.API_KEY_GPT)
+                    await ai(conn, msg.key.remoteJid, waMsg.substr(2), process.env.API_KEY_GPT, process.env.ORG_KEY_GPT)
                 } else if(waMsg === '.enable_bstation_notif'){
                         await addGroup(conn, msg.key.remoteJid)
                 } else if(waMsg === '.disable_bstation_notif'){
